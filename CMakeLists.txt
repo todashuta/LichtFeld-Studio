@@ -625,7 +625,8 @@ endif()
 # Portable build: bundle runtime dependencies via GET_RUNTIME_DEPENDENCIES
 if(BUILD_PORTABLE)
     # Exclusion patterns for system libraries
-    set(_PRE_EXCLUDE [[api-ms-.*]] [[ext-ms-.*]] [[API-MS-.*]] [[EXT-MS-.*]])
+    # nvcuda.dll is provided by the NVIDIA GPU driver, not the CUDA Toolkit
+    set(_PRE_EXCLUDE [[api-ms-.*]] [[ext-ms-.*]] [[API-MS-.*]] [[EXT-MS-.*]] [[nvcuda\.dll]])
     set(_POST_EXCLUDE
         [[.*[Ss]ystem32.*]] [[.*[Ww]indows.*]]
         [[/lib/x86_64-linux-gnu/.*]] [[/lib64/ld-linux.*]] [[/usr/lib.*]]
