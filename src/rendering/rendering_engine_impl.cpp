@@ -294,7 +294,7 @@ namespace lfs::rendering {
             .fov = request.viewport.fov,
             .scaling_modifier = request.scaling_modifier,
             .antialiasing = false,
-            .mip_filter = false,  // Not applicable to point clouds
+            .mip_filter = false, // Not applicable to point clouds
             .sh_degree = 0,
             .render_mode = RenderMode::RGB,
             .crop_box = nullptr,
