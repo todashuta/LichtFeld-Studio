@@ -4,8 +4,8 @@
 
 #include "scene/scene_manager.hpp"
 #include "command/command_history.hpp"
-#include "command/commands/crop_command.hpp"
 #include "command/commands/composite_command.hpp"
+#include "command/commands/crop_command.hpp"
 #include "command/commands/mirror_command.hpp"
 #include "core/logger.hpp"
 #include "core/parameter_manager.hpp"

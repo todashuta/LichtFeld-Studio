@@ -13,23 +13,23 @@ namespace lfs::core {
 
         // Sign multipliers for position reflection per axis
         constexpr float POS_MULT[3][3] = {
-            {-1.0f, 1.0f, 1.0f},  // X
-            {1.0f, -1.0f, 1.0f},  // Y
-            {1.0f, 1.0f, -1.0f}   // Z
+            {-1.0f, 1.0f, 1.0f}, // X
+            {1.0f, -1.0f, 1.0f}, // Y
+            {1.0f, 1.0f, -1.0f}  // Z
         };
 
         // Quaternion sign multipliers per axis (w,x,y,z)
         constexpr float QUAT_MULT[3][4] = {
-            {1.0f, 1.0f, -1.0f, -1.0f},  // X
-            {1.0f, -1.0f, 1.0f, -1.0f},  // Y
-            {1.0f, -1.0f, -1.0f, 1.0f}   // Z
+            {1.0f, 1.0f, -1.0f, -1.0f}, // X
+            {1.0f, -1.0f, 1.0f, -1.0f}, // Y
+            {1.0f, -1.0f, -1.0f, 1.0f}  // Z
         };
 
         // SH coefficient multipliers per axis (15 coeffs for degrees 1-3, excluding DC)
         constexpr float SH_MULT[3][15] = {
-            {1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1},  // X
-            {-1, 1, 1, -1, -1, 1, 1, 1, -1, -1, -1, 1, 1, 1, 1},  // Y
-            {1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, -1, 1}   // Z
+            {1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1}, // X
+            {-1, 1, 1, -1, -1, 1, 1, 1, -1, -1, -1, 1, 1, 1, 1}, // Y
+            {1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, -1, 1}  // Z
         };
 
         // Cumulative SH coefficient counts per degree (excluding DC)
@@ -38,7 +38,7 @@ namespace lfs::core {
         struct MirrorCache {
             Tensor pos_mult[3];
             Tensor quat_mult[3];
-            Tensor sh_mult[3][3];  // [axis][degree 1-3] - no degree 0 (empty)
+            Tensor sh_mult[3][3]; // [axis][degree 1-3] - no degree 0 (empty)
             Device device = Device::CPU;
             bool valid = false;
         };
