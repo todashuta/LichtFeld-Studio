@@ -1945,19 +1945,19 @@ TEST_F(UnicodePathTest, LoggingSafety_PathToUtf8NeverThrows) {
 
     // Create paths with characters that may not be representable in Windows code pages
     std::vector<std::string> problematic_names = {
-        "日本語_Japanese_日本語",              // Japanese
-        "中文_Chinese_中文",                   // Chinese Simplified
-        "繁體中文_TraditionalChinese",         // Chinese Traditional
-        "한국어_Korean_한국어",                // Korean
-        "ไทย_Thai_ไทย",                        // Thai
-        "العربية_Arabic_العربية",              // Arabic
-        "עברית_Hebrew_עברית",                  // Hebrew
-        "Ελληνικά_Greek_Ελληνικά",             // Greek
-        "Кириллица_Cyrillic_Кириллица",        // Cyrillic
-        "emoji_😀_🎉_🚀_emoji",                // Emoji
-        "mathematical_𝔸𝔹ℂ_symbols",            // Mathematical symbols
-        "music_𝄞𝄢𝄪_notes",                     // Musical notation
-        "mixed_日本語_한국어_中文_emoji_😀",   // Maximum mixing
+        "日本語_Japanese_日本語",            // Japanese
+        "中文_Chinese_中文",                 // Chinese Simplified
+        "繁體中文_TraditionalChinese",       // Chinese Traditional
+        "한국어_Korean_한국어",              // Korean
+        "ไทย_Thai_ไทย",                      // Thai
+        "العربية_Arabic_العربية",            // Arabic
+        "עברית_Hebrew_עברית",                // Hebrew
+        "Ελληνικά_Greek_Ελληνικά",           // Greek
+        "Кириллица_Cyrillic_Кириллица",      // Cyrillic
+        "emoji_😀_🎉_🚀_emoji",              // Emoji
+        "mathematical_𝔸𝔹ℂ_symbols",          // Mathematical symbols
+        "music_𝄞𝄢𝄪_notes",                   // Musical notation
+        "mixed_日本語_한국어_中文_emoji_😀", // Maximum mixing
     };
 
     for (const auto& name : problematic_names) {
@@ -1976,7 +1976,8 @@ TEST_F(UnicodePathTest, LoggingSafety_PathToUtf8NeverThrows) {
         std::string utf8_result;
         EXPECT_NO_THROW({
             utf8_result = path_to_utf8(path);
-        }) << "path_to_utf8 should NEVER throw for: " << name;
+        }) << "path_to_utf8 should NEVER throw for: "
+           << name;
 
         // Verify result is usable
         EXPECT_FALSE(utf8_result.empty()) << "path_to_utf8 returned empty string";
