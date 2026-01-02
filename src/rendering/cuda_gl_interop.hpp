@@ -87,8 +87,8 @@ namespace lfs::rendering {
         int allocated_width_ = 0;  // Actual texture allocation width (may be larger)
         int allocated_height_ = 0; // Actual texture allocation height (may be larger)
         bool is_registered_ = false;
-        bool is_depth_format_ = false;     // True if R32F, false if RGBA8
-        bool external_texture_ = false;    // True if texture is externally owned (don't delete)
+        bool is_depth_format_ = false;  // True if R32F, false if RGBA8
+        bool external_texture_ = false; // True if texture is externally owned (don't delete)
 
     public:
         CudaGLInteropTextureImpl();

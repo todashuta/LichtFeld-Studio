@@ -8,6 +8,7 @@
 #include "core/logger.hpp"
 #include "core/path_utils.hpp"
 #include "core/splat_data.hpp"
+#include "core/tensor/internal/memory_pool.hpp"
 #include "geometry/euclidean_transform.hpp"
 #include "rendering/cuda_kernels.hpp"
 #include "rendering/rasterizer/rasterization/include/rasterization_api_tensor.h"
@@ -16,7 +17,6 @@
 #include "scene/scene_manager.hpp"
 #include "training/trainer.hpp"
 #include "training/training_manager.hpp"
-#include "core/tensor/internal/memory_pool.hpp"
 #include <cuda_runtime.h>
 #include <glad/glad.h>
 #include <shared_mutex>
@@ -25,7 +25,7 @@
 namespace lfs::vis {
 
     namespace {
-        constexpr int GPU_ALIGNMENT = 16;  // 16-pixel alignment for GPU texture efficiency
+        constexpr int GPU_ALIGNMENT = 16; // 16-pixel alignment for GPU texture efficiency
     }
 
     using namespace lfs::core::events;
@@ -1067,7 +1067,7 @@ namespace lfs::vis {
                     glm::ivec2 actual_image_size(0, 0);
                     if (cached_result_.image) {
                         const auto& img = *cached_result_.image;
-                        actual_image_size = glm::ivec2(img.size(2), img.size(1));  // [C, H, W] -> (W, H)
+                        actual_image_size = glm::ivec2(img.size(2), img.size(1)); // [C, H, W] -> (W, H)
                     }
 
                     glm::ivec2 viewport_pos(0, 0);

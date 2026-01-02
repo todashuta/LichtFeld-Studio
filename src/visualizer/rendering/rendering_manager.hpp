@@ -366,8 +366,8 @@ namespace lfs::vis {
         mutable const lfs::core::PointCloud* cached_source_point_cloud_ = nullptr;
 
         // Viewport state
-        glm::ivec2 last_viewport_size_{0, 0};        // Last requested viewport size
-        glm::ivec2 cached_result_size_{0, 0};        // Size at which cached_result_ was actually rendered
+        glm::ivec2 last_viewport_size_{0, 0}; // Last requested viewport size
+        glm::ivec2 cached_result_size_{0, 0}; // Size at which cached_result_ was actually rendered
     };
 
 } // namespace lfs::vis

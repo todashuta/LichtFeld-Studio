@@ -14,7 +14,7 @@
 namespace lfs::rendering {
 
     namespace {
-        constexpr int GPU_ALIGNMENT = 16;  // 16-pixel alignment for GPU texture efficiency
+        constexpr int GPU_ALIGNMENT = 16; // 16-pixel alignment for GPU texture efficiency
     }
 
     RenderingPipeline::RenderingPipeline()

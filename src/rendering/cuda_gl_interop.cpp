@@ -24,7 +24,7 @@
 namespace lfs::rendering {
 
     namespace {
-        constexpr int GPU_ALIGNMENT = 16;  // 16-pixel alignment for GPU texture efficiency
+        constexpr int GPU_ALIGNMENT = 16; // 16-pixel alignment for GPU texture efficiency
     }
 
     // Implementation for CudaGraphicsResourceDeleter
@@ -297,7 +297,7 @@ namespace lfs::rendering {
         texture_id_ = texture_id;
         width_ = width;
         height_ = height;
-        external_texture_ = true;  // Externally owned texture
+        external_texture_ = true; // Externally owned texture
 
         // Clear any previous CUDA errors
         cudaGetLastError();

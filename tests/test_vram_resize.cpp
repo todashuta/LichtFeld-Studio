@@ -2,31 +2,31 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later */
 
-#include <gtest/gtest.h>
-#include <cuda_runtime.h>
-#include "core/tensor.hpp"
 #include "core/logger.hpp"
+#include "core/tensor.hpp"
 #include "core/tensor/internal/memory_pool.hpp"
+#include <cuda_runtime.h>
+#include <gtest/gtest.h>
 
 using namespace lfs::core;
 
 namespace {
 
-// Get current GPU memory usage in MB
-std::pair<size_t, size_t> getGPUMemoryMB() {
-    size_t free_bytes, total_bytes;
-    cudaMemGetInfo(&free_bytes, &total_bytes);
-    size_t used_bytes = total_bytes - free_bytes;
-    return {used_bytes / (1024 * 1024), total_bytes / (1024 * 1024)};
-}
+    // Get current GPU memory usage in MB
+    std::pair<size_t, size_t> getGPUMemoryMB() {
+        size_t free_bytes, total_bytes;
+        cudaMemGetInfo(&free_bytes, &total_bytes);
+        size_t used_bytes = total_bytes - free_bytes;
+        return {used_bytes / (1024 * 1024), total_bytes / (1024 * 1024)};
+    }
 
-// Force CUDA memory cleanup - including memory pool trim
-void forceMemoryCleanup() {
-    cudaDeviceSynchronize();
-    // Trim the CUDA memory pool to release cached memory back to OS
-    CudaMemoryPool::instance().trim_cached_memory();
-    cudaDeviceSynchronize();
-}
+    // Force CUDA memory cleanup - including memory pool trim
+    void forceMemoryCleanup() {
+        cudaDeviceSynchronize();
+        // Trim the CUDA memory pool to release cached memory back to OS
+        CudaMemoryPool::instance().trim_cached_memory();
+        cudaDeviceSynchronize();
+    }
 
 } // namespace
 
@@ -90,10 +90,10 @@ TEST_F(VRAMResizeTest, ResizePatternGrowShrink) {
 
     // Simulate growing window - allocate progressively larger tensors
     std::vector<std::pair<int, int>> sizes = {
-        {720, 1280},   // 720p
-        {1080, 1920},  // 1080p
-        {1440, 2560},  // 1440p
-        {2160, 3840},  // 4K
+        {720, 1280},  // 720p
+        {1080, 1920}, // 1080p
+        {1440, 2560}, // 1440p
+        {2160, 3840}, // 4K
     };
 
     Tensor current_image;
@@ -150,7 +150,7 @@ TEST_F(VRAMResizeTest, TensorReuseVsReallocation) {
 
     // Simulate bad pattern: allocate new tensors every frame without reusing
     for (int i = 0; i < 10; ++i) {
-        int h = 1080 + (i * 10);  // Slightly different size each time
+        int h = 1080 + (i * 10); // Slightly different size each time
         int w = 1920 + (i * 10);
 
         Tensor image = Tensor::zeros({3, h, w}, Device::CUDA, DataType::Float32);
