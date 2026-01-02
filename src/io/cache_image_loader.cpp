@@ -399,8 +399,9 @@ namespace lfs::io {
             return load_and_preprocess(data, w, h, c);
         }
 
-        const std::string unique_name = std::format("rf{}_mw{}_{}", params.resize_factor, params.max_width, lfs::core::path_to_utf8(path.filename()));
-        const auto cache_img_path = cache_folder_ / unique_name;
+        // Hash avoids Unicode path issues on Windows (operator/ interprets std::string as ANSI)
+        const std::string cache_key = std::format("rf{}_mw{}_{}", params.resize_factor, params.max_width, lfs::core::path_to_utf8(path));
+        const auto cache_img_path = cache_folder_ / (std::to_string(std::hash<std::string>{}(cache_key)) + ".jpg");
 
         std::tuple<unsigned char*, int, int, int> result;
         if (does_cache_image_exist(cache_img_path)) {
