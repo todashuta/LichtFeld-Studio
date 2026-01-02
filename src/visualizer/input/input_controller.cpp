@@ -1012,9 +1012,13 @@ namespace lfs::vis {
                 LOG_INFO("Loading checkpoint via drag-and-drop: {}", lfs::core::path_to_utf8(filepath.filename()));
                 return;
             } else if (ext == ".json") {
-                cmd::LoadConfigFile{.path = filepath}.emit();
-                LOG_INFO("Loading config via drag-and-drop: {}", lfs::core::path_to_utf8(filepath.filename()));
-                return;
+                if (lfs::io::Loader::isDatasetPath(filepath)) {
+                    dataset_path = filepath;
+                }else {
+                    cmd::LoadConfigFile{.path = filepath}.emit();
+                    LOG_INFO("Loading config via drag-and-drop: {}", lfs::core::path_to_utf8(filepath.filename()));
+                    return;
+                }
             } else if (ext == ".ply" || ext == ".sog" || ext == ".spz") {
                 splat_files.push_back(filepath);
             } else if (std::filesystem::is_directory(filepath)) {
