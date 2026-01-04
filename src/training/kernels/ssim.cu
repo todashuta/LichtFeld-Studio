@@ -554,7 +554,11 @@ namespace {
                 // Second row
                 int ly2 = ly + BLOCK_Y;
                 if (ly2 < CONV_Y) {
-                    sumX = 0.f; sumX2 = 0.f; sumY = 0.f; sumY2 = 0.f; sumXY = 0.f;
+                    sumX = 0.f;
+                    sumX2 = 0.f;
+                    sumY = 0.f;
+                    sumY2 = 0.f;
+                    sumXY = 0.f;
 
 #pragma unroll
                     for (int d = 1; d <= HALO; ++d) {
@@ -641,10 +645,7 @@ namespace {
                     loss_map[global_idx] = l1_weight * l1_loss + ssim_weight * (1.0f - ssim_val);
 
                     if (dm_dmu1) {
-                        float d_m_dmu1 = ((mu2 * 2.f * D_) / (A * B)
-                            - (mu2 * 2.f * C_) / (A * B)
-                            - (mu1 * 2.f * C_ * D_) / (A * A * B)
-                            + (mu1 * 2.f * C_ * D_) / (A * B * B));
+                        float d_m_dmu1 = ((mu2 * 2.f * D_) / (A * B) - (mu2 * 2.f * C_) / (A * B) - (mu1 * 2.f * C_ * D_) / (A * A * B) + (mu1 * 2.f * C_ * D_) / (A * B * B));
                         float d_m_dsigma1_sq = (-C_ * D_) / (A * B * B);
                         float d_m_dsigma12 = (2.f * C_) / (A * B);
 
@@ -816,7 +817,7 @@ namespace {
         float C2,
         const float* __restrict__ img1,
         const float* __restrict__ img2,
-        const float* __restrict__ mask,  // [H, W] single channel
+        const float* __restrict__ mask, // [H, W] single channel
         float* __restrict__ loss_map,
         float* __restrict__ dm_dmu1,
         float* __restrict__ dm_dsigma1_sq,
@@ -911,7 +912,11 @@ namespace {
 
                 int ly2 = ly + BLOCK_Y;
                 if (ly2 < CONV_Y) {
-                    sumX = 0.f; sumX2 = 0.f; sumY = 0.f; sumY2 = 0.f; sumXY = 0.f;
+                    sumX = 0.f;
+                    sumX2 = 0.f;
+                    sumY = 0.f;
+                    sumY2 = 0.f;
+                    sumXY = 0.f;
 
 #pragma unroll
                     for (int d = 1; d <= HALO; ++d) {
@@ -999,10 +1004,7 @@ namespace {
                     loss_map[global_idx] = combined * mask_val;
 
                     if (dm_dmu1) {
-                        float d_m_dmu1 = ((mu2 * 2.f * D_) / (A * B)
-                            - (mu2 * 2.f * C_) / (A * B)
-                            - (mu1 * 2.f * C_ * D_) / (A * A * B)
-                            + (mu1 * 2.f * C_ * D_) / (A * B * B));
+                        float d_m_dmu1 = ((mu2 * 2.f * D_) / (A * B) - (mu2 * 2.f * C_) / (A * B) - (mu1 * 2.f * C_ * D_) / (A * A * B) + (mu1 * 2.f * C_ * D_) / (A * B * B));
                         float d_m_dsigma1_sq = (-C_ * D_) / (A * B * B);
                         float d_m_dsigma12 = (2.f * C_) / (A * B);
 
@@ -1018,7 +1020,7 @@ namespace {
     // Masked Fused L1+SSIM Backward Kernel
     __global__ void maskedFusedL1SSIMBackwardCUDA(
         float ssim_weight,
-        float inv_mask_sum,  // 1.0 / mask_sum for normalization
+        float inv_mask_sum, // 1.0 / mask_sum for normalization
         int H,
         int W,
         int CH,
@@ -1539,8 +1541,10 @@ namespace lfs::training::kernels {
         auto img1 = img1_input.contiguous();
         auto img2 = img2_input.contiguous();
 
-        if (img1.ndim() == 3) img1 = img1.unsqueeze(0);
-        if (img2.ndim() == 3) img2 = img2.unsqueeze(0);
+        if (img1.ndim() == 3)
+            img1 = img1.unsqueeze(0);
+        if (img2.ndim() == 3)
+            img2 = img2.unsqueeze(0);
 
         const int N = static_cast<int>(img1.shape()[0]);
         const int C = static_cast<int>(img1.shape()[1]);
@@ -1655,8 +1659,10 @@ namespace lfs::training::kernels {
         auto img2 = img2_input.contiguous();
         auto mask = mask_input.contiguous();
 
-        if (img1.ndim() == 3) img1 = img1.unsqueeze(0);
-        if (img2.ndim() == 3) img2 = img2.unsqueeze(0);
+        if (img1.ndim() == 3)
+            img1 = img1.unsqueeze(0);
+        if (img2.ndim() == 3)
+            img2 = img2.unsqueeze(0);
 
         // Ensure mask is 2D [H, W]
         auto mask_2d = mask.ndim() == 3 ? mask.squeeze(0) : mask;

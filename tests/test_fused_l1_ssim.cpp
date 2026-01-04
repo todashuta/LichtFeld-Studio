@@ -49,11 +49,11 @@ protected:
         const int W = static_cast<int>(img1_4d.shape()[3]);
 
         // Get per-pixel L1 loss (full image)
-        auto l1_map = (img1_4d - img2_4d).abs();  // [N, C, H, W]
+        auto l1_map = (img1_4d - img2_4d).abs(); // [N, C, H, W]
 
         // Get per-pixel SSIM map for FULL image (no cropping in ssim_forward_map)
         auto ssim_result = ssim_forward_map(img1_4d, img2_4d, /*apply_valid_padding=*/false);
-        auto ssim_map = ssim_result.ssim_map;  // [N, C, H, W]
+        auto ssim_map = ssim_result.ssim_map; // [N, C, H, W]
 
         // Compute per-pixel combined loss map (full image)
         auto dssim_map = Tensor::ones(TensorShape(ssim_map.shape().dims()), Device::CUDA) - ssim_map;
