@@ -39,7 +39,7 @@ namespace lichtfeld::Strings {
             inline constexpr const char* GETTING_STARTED = "menu.help.getting_started";
             inline constexpr const char* ABOUT = "menu.help.about";
         } // namespace Help
-    } // namespace Menu
+    }     // namespace Menu
 
     namespace Window {
         inline constexpr const char* GETTING_STARTED = "window.getting_started";
@@ -99,7 +99,7 @@ namespace lichtfeld::Strings {
             inline constexpr const char* ENABLED = "about.interop.enabled";
             inline constexpr const char* DISABLED = "about.interop.disabled";
         } // namespace Interop
-    } // namespace About
+    }     // namespace About
 
     namespace Training {
         namespace Section {
@@ -287,7 +287,7 @@ namespace lichtfeld::Strings {
             inline constexpr const char* ADD = "training.button.add";
             inline constexpr const char* REMOVE = "training.button.remove";
         } // namespace Button
-    } // namespace Training
+    }     // namespace Training
 
     namespace Scene {
         inline constexpr const char* ADD_PLY = "scene.add_ply";
@@ -301,6 +301,9 @@ namespace lichtfeld::Strings {
         inline constexpr const char* GO_TO_CAM_VIEW = "scene.go_to_cam_view";
         inline constexpr const char* FIT_TO_SCENE = "scene.fit_to_scene";
         inline constexpr const char* FIT_TO_SCENE_TRIMMED = "scene.fit_to_scene_trimmed";
+        inline constexpr const char* ADD_CROP_BOX = "scene.add_crop_box";
+        inline constexpr const char* ADD_CROP_ELLIPSOID = "scene.add_crop_ellipsoid";
+        inline constexpr const char* RESET_CROP = "scene.reset_crop";
         inline constexpr const char* MERGE_TO_SINGLE_PLY = "scene.merge_to_single_ply";
         inline constexpr const char* MOVE_TO = "scene.move_to";
         inline constexpr const char* MOVE_TO_ROOT = "scene.move_to_root";
@@ -454,6 +457,7 @@ namespace lichtfeld::Strings {
         inline constexpr const char* PAINTING = "toolbar.painting";
         inline constexpr const char* ALIGN_3POINT = "toolbar.align_3point";
         inline constexpr const char* CROP_BOX = "toolbar.crop_box";
+        inline constexpr const char* ELLIPSOID = "toolbar.ellipsoid";
         inline constexpr const char* BRUSH_SELECTION = "toolbar.brush_selection";
         inline constexpr const char* RECT_SELECTION = "toolbar.rect_selection";
         inline constexpr const char* POLYGON_SELECTION = "toolbar.polygon_selection";
@@ -505,6 +509,19 @@ namespace lichtfeld::Strings {
         inline constexpr const char* LINE_WIDTH = "cropbox.line_width";
         inline constexpr const char* INSTRUCTIONS = "cropbox.instructions";
     } // namespace CropBox
+
+    namespace Ellipsoid {
+        inline constexpr const char* TITLE = "ellipsoid.title";
+        inline constexpr const char* NOT_VISIBLE = "ellipsoid.not_visible";
+        inline constexpr const char* NO_SELECTION = "ellipsoid.no_selection";
+        inline constexpr const char* INVALID = "ellipsoid.invalid";
+        inline constexpr const char* POSITION = "ellipsoid.position";
+        inline constexpr const char* ROTATION = "ellipsoid.rotation";
+        inline constexpr const char* RADII = "ellipsoid.radii";
+        inline constexpr const char* APPEARANCE = "ellipsoid.appearance";
+        inline constexpr const char* LINE_WIDTH = "ellipsoid.line_width";
+        inline constexpr const char* INSTRUCTIONS = "ellipsoid.instructions";
+    } // namespace Ellipsoid
 
     namespace FileBrowser {
         inline constexpr const char* TITLE = "file_browser.title";

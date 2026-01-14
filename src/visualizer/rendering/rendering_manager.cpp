@@ -20,6 +20,7 @@
 #include "training/training_manager.hpp"
 #include <cuda_runtime.h>
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <shared_mutex>
 #include <stdexcept>
 
@@ -27,7 +28,7 @@ namespace lfs::vis {
 
     namespace {
         constexpr int GPU_ALIGNMENT = 16; // 16-pixel alignment for GPU texture efficiency
-    } // namespace
+    }                                     // namespace
 
     using namespace lfs::core::events;
 
@@ -430,6 +431,13 @@ namespace lfs::vis {
             markDirty();
         });
 
+        // Ellipsoid changes (scene graph is source of truth, this just handles enable flag)
+        ui::EllipsoidChanged::when([this](const auto& event) {
+            std::lock_guard<std::mutex> lock(settings_mutex_);
+            settings_.use_ellipsoid = event.enabled;
+            markDirty();
+        });
+
         // Point cloud mode changes
         ui::PointCloudModeChanged::when([this](const auto& event) {
             std::lock_guard<std::mutex> lock(settings_mutex_);
@@ -723,6 +731,24 @@ namespace lfs::vis {
                     .transform = glm::inverse(cb.world_transform)};
                 request.crop_inverse = cb.data->inverse;
                 request.crop_desaturate = settings_.show_crop_box && !settings_.use_crop_box;
+            }
+        }
+
+        // Ellipsoid from scene graph
+        if (settings_.use_ellipsoid || settings_.show_ellipsoid) {
+            const auto visible_ellipsoids = scene_manager->getScene().getVisibleEllipsoids();
+            const NodeId selected_ellipsoid_id = scene_manager->getSelectedNodeEllipsoidId();
+            for (const auto& el : visible_ellipsoids) {
+                if (!el.data)
+                    continue;
+                if (selected_ellipsoid_id != NULL_NODE && el.node_id != selected_ellipsoid_id)
+                    continue;
+                request.ellipsoid = lfs::rendering::Ellipsoid{
+                    .radii = el.data->radii,
+                    .transform = glm::inverse(el.world_transform)};
+                request.ellipsoid_inverse = el.data->inverse;
+                request.ellipsoid_desaturate = settings_.show_ellipsoid && !settings_.use_ellipsoid;
+                break;
             }
         }
 
@@ -1377,6 +1403,35 @@ namespace lfs::vis {
             }
         }
 
+        // Render ellipsoid wireframe overlays
+        if (settings_.show_ellipsoid && engine_ && context.scene_manager) {
+            const auto visible_ellipsoids = context.scene_manager->getScene().getVisibleEllipsoids();
+            const NodeId selected_ellipsoid_id = context.scene_manager->getSelectedNodeEllipsoidId();
+
+            for (const auto& el : visible_ellipsoids) {
+                if (!el.data)
+                    continue;
+
+                const lfs::rendering::Ellipsoid ellipsoid{
+                    .radii = el.data->radii,
+                    .transform = el.world_transform};
+
+                const glm::vec3 base_color = el.data->inverse
+                                                 ? glm::vec3(1.0f, 0.2f, 0.2f)
+                                                 : el.data->color;
+                const bool is_selected = (el.node_id == selected_ellipsoid_id);
+                const float flash = is_selected ? el.data->flash_intensity : 0.0f;
+                constexpr float FLASH_LINE_BOOST = 4.0f;
+                const glm::vec3 color = glm::mix(base_color, glm::vec3(1.0f), flash);
+                const float line_width = el.data->line_width + flash * FLASH_LINE_BOOST;
+
+                auto ellipsoid_result = engine_->renderEllipsoid(ellipsoid, viewport, color, line_width);
+                if (!ellipsoid_result) {
+                    LOG_WARN("Failed to render ellipsoid: {}", ellipsoid_result.error());
+                }
+            }
+        }
+
         // Coordinate axes
         if (settings_.show_coord_axes && engine_) {
             auto axes_result = engine_->renderCoordinateAxes(viewport, settings_.axes_size, settings_.axes_visibility, settings_.equirectangular);
@@ -1588,6 +1643,66 @@ namespace lfs::vis {
             return;
         }
         lfs::rendering::brush_select_tensor(*cached_result_.screen_positions, mouse_x, mouse_y, radius, selection_out);
+    }
+
+    void RenderingManager::applyCropFilter(lfs::core::Tensor& selection) {
+        if (!selection.is_valid() || !settings_.crop_filter_for_selection)
+            return;
+
+        auto* const sm = services().sceneOrNull();
+        if (!sm)
+            return;
+
+        const auto* const model = sm->getModelForRendering();
+        if (!model || model->size() == 0)
+            return;
+
+        const auto& means = model->means();
+        if (!means.is_valid() || means.size(0) != selection.size(0))
+            return;
+
+        lfs::core::Tensor crop_t, crop_min, crop_max;
+        bool crop_inverse = false;
+
+        const auto& cropboxes = sm->buildRenderState().cropboxes;
+        if (!cropboxes.empty() && cropboxes[0].data) {
+            const auto& cb = cropboxes[0];
+            const glm::mat4 inv_transform = glm::inverse(cb.world_transform);
+            const float* const t_ptr = glm::value_ptr(inv_transform);
+            crop_t = lfs::core::Tensor::from_vector(std::vector<float>(t_ptr, t_ptr + 16), {4, 4}, lfs::core::Device::CPU).cuda();
+            crop_min = lfs::core::Tensor::from_vector(
+                           {cb.data->min.x, cb.data->min.y, cb.data->min.z}, {3}, lfs::core::Device::CPU)
+                           .cuda();
+            crop_max = lfs::core::Tensor::from_vector(
+                           {cb.data->max.x, cb.data->max.y, cb.data->max.z}, {3}, lfs::core::Device::CPU)
+                           .cuda();
+            crop_inverse = cb.data->inverse;
+        }
+
+        lfs::core::Tensor ellip_t, ellip_radii;
+        bool ellipsoid_inverse = false;
+
+        const auto& ellipsoids = sm->getScene().getVisibleEllipsoids();
+        if (!ellipsoids.empty() && ellipsoids[0].data) {
+            const auto& el = ellipsoids[0];
+            const glm::mat4 inv_transform = glm::inverse(el.world_transform);
+            const float* const t_ptr = glm::value_ptr(inv_transform);
+            ellip_t = lfs::core::Tensor::from_vector(std::vector<float>(t_ptr, t_ptr + 16), {4, 4}, lfs::core::Device::CPU).cuda();
+            ellip_radii = lfs::core::Tensor::from_vector(
+                              {el.data->radii.x, el.data->radii.y, el.data->radii.z}, {3}, lfs::core::Device::CPU)
+                              .cuda();
+            ellipsoid_inverse = el.data->inverse;
+        }
+
+        lfs::rendering::filter_selection_by_crop(
+            selection, means,
+            crop_t.is_valid() ? &crop_t : nullptr,
+            crop_min.is_valid() ? &crop_min : nullptr,
+            crop_max.is_valid() ? &crop_max : nullptr,
+            crop_inverse,
+            ellip_t.is_valid() ? &ellip_t : nullptr,
+            ellip_radii.is_valid() ? &ellip_radii : nullptr,
+            ellipsoid_inverse);
     }
 
     void RenderingManager::setBrushState(const bool active, const float x, const float y, const float radius,
