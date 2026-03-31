@@ -30,10 +30,12 @@ services:
       - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+      - DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}
     volumes:
       - ../:/home/${USERNAME}/projects/LichtFeld-Studio
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${HOME}/.Xauthority:/home/${USERNAME}/.Xauthority:rw
       - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
       - ${HOME}/.lichtfeld:/home/${USERNAME}/.lichtfeld:rw
+      - ${XDG_RUNTIME_DIR}/bus:${XDG_RUNTIME_DIR}/bus
     gpus: all
